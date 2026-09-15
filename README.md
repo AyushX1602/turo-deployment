@@ -1,6 +1,4 @@
-# Turborepo starter
-
-This Turborepo starter is maintained by the Turborepo core team.
+Frontend deployed at http://100.31.145.24:3000/
 
 ## Using this example
 
