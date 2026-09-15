@@ -1,0 +1,63 @@
+name: Continuous Deployment (Prod) (Backend)
+
+on:
+  push:
+    branches: [main]
+
+env:
+  DOCKERHUB_NAMESPACE: ayushx1602
+  IMAGE_NAME: user-app-backend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Docker login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile.backend
+          push: true
+          build-args: |
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
+          tags: |
+            ${{ env.DOCKERHUB_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ${{ env.DOCKERHUB_NAMESPACE }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Redeploy backend on VM
+        env:
+          IMAGE: ${{ env.DOCKERHUB_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_USER: ${{ secrets.VM_USER }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/ssh_key
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/ssh_key
+          VM_USER="${VM_USER:-root}"
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key "$VM_USER@$VM_HOST" << EOF
+            docker pull "$IMAGE"
+            docker run --rm -e DATABASE_URL="$DATABASE_URL" "$IMAGE" sh -lc "cd packages/db && bunx prisma migrate deploy"
+            docker stop user_backend || true
+            docker rm user_backend || true
+            docker run -d \
+              --name user_backend \
+              --restart unless-stopped \
+              -p 8080:8080 \
+              -e DATABASE_URL="$DATABASE_URL" \
+              "$IMAGE"
+          EOF
