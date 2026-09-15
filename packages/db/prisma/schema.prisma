@@ -8,8 +8,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id              String      @id    @default(uuid())
-  username        String
-  password        String
+model Todo {
+  id        String   @id @default(uuid())
+  title     String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

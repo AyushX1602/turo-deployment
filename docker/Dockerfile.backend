@@ -1,6 +1,6 @@
 FROM oven/bun:1
 
-ARG DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 
 WORKDIR /usr/src/app
@@ -13,6 +13,7 @@ RUN bun install
 
 COPY . .
 
+RUN test -n "$DATABASE_URL"
 RUN bun run generate:db
 
 EXPOSE 8080

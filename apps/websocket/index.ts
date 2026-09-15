@@ -11,10 +11,9 @@ Bun.serve({
   },
   websocket: {
     async message(ws, message) {
-      await prismaClient.user.create({
+      await prismaClient.todo.create({
         data: {
-          username: Math.random().toString(),
-          password: Math.random().toString(),
+          title: message.toString(),
         },
       });
 

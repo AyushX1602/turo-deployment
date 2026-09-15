@@ -19,6 +19,7 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 * {
@@ -30,6 +31,88 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.todo-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+}
+
+.todo-shell {
+  width: min(100%, 560px);
+}
+
+.todo-shell h1 {
+  margin-bottom: 20px;
+  font-size: 40px;
+}
+
+.todo-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.todo-form input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #d4d4d4;
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.todo-form button,
+.todo-check,
+.delete-button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.todo-form button {
+  background: #171717;
+  color: #ffffff;
+}
+
+.todo-list {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+}
+
+.todo-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.todo-check {
+  background: #eeeeee;
+}
+
+.delete-button {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.completed {
+  color: #737373;
+  text-decoration: line-through;
 }
 
 .imgDark {
