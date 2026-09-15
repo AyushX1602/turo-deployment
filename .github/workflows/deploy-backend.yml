@@ -9,7 +9,7 @@ env:
 
 jobs: 
   build:
-      runs-on: ubuntu-latetst
+      runs-on: ubuntu-latest
       steps:
         - name: checkout code
           uses: actions/checkout@v3
@@ -26,4 +26,4 @@ jobs:
             context: .
             file: apps/backend/Dockerfile.backend
             push: true
-            tags: AyushX1602/turo-deployment:${{ github.sha }}
+            tags: ${{ env.DOCKERHUB_NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
